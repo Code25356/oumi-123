@@ -23,7 +23,7 @@ With Oumi, you can:
 - 🔄 Synthesize and curate training data with LLM judges
 - ⚡️ Deploy models efficiently with popular inference engines (vLLM, SGLang)
 - 📊 Evaluate models comprehensively across standard benchmarks
-- 🌎 Run anywhere - from laptops to clusters to clouds (AWS, Azure, GCP, Lambda, and more)
+- 🌎 Run anywhere - from laptops to clusters to clouds (AWS, Azure, GCP, Lambda, Kubernetes, and more)
 - 🔌 Integrate with both open models and commercial APIs (OpenAI, Anthropic, Vertex AI, Together, Parasail, ...)
 
 All with one consistent API, production-grade reliability, and all the flexibility you need for research.

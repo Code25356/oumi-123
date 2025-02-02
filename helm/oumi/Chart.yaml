@@ -1,0 +1,17 @@
+apiVersion: v2
+name: oumi
+description: A Helm chart for deploying Oumi - an AI model serving platform
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - ai
+  - machine-learning
+  - model-serving
+maintainers:
+  - name: Oumi Team
+home: https://github.com/Code25356/oumi-123
+sources:
+  - https://github.com/Code25356/oumi-123
+annotations:
+  category: AI/Machine Learning

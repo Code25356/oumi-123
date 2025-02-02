@@ -1,0 +1,53 @@
+name: oumi-k8s-quickstart
+description: Example configuration for running Oumi on Kubernetes
+
+resources:
+  cloud: kubernetes  # Use Kubernetes as the cloud provider
+  # Optional: Specify a custom kubeconfig path
+  # kubernetes_config: ~/.kube/config
+  
+  # Resource requirements
+  cpus: 4
+  memory: 16Gi
+  # For GPU workloads, uncomment:
+  # accelerators: A100:1
+
+  # Optional: Specify node selector for targeting specific node pools
+  node_selector:
+    cloud.google.com/gke-nodepool: cpu-pool  # Example for GKE
+    # For GPU workloads on GKE:
+    # cloud.google.com/gke-nodepool: gpu-pool
+  
+  # Optional: Specify tolerations for node taints
+  tolerations:
+    - key: "nvidia.com/gpu"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+# Storage configuration
+storage_mounts:
+  models:  # Mount point for model files
+    source: s3://oumi-models/
+    mount_path: /app/models
+  data:    # Mount point for datasets
+    source: s3://oumi-datasets/
+    mount_path: /app/data
+
+# Environment variables
+envs:
+  OUMI_LOG_LEVEL: INFO
+  OUMI_CACHE_DIR: /app/cache
+
+# Working directory in the container
+working_dir: /app
+
+# Setup commands to run before the main task
+setup: |
+  pip install -U pip
+  pip install oumi[gpu]
+
+# Main task to run
+run: |
+  python -m oumi.cli.train \
+    --config configs/recipes/smollm/sft/135m/quickstart_train.yaml \
+    --output_dir /app/output

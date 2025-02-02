@@ -1,0 +1,56 @@
+name: oumi-k8s-gpu
+description: Example configuration for running Oumi on Kubernetes with GPU support
+
+resources:
+  cloud: kubernetes
+  
+  # GPU resource requirements
+  cpus: 8
+  memory: 32Gi
+  accelerators: A100:1  # Request 1 NVIDIA A100 GPU
+  
+  # Target GPU nodes
+  node_selector:
+    cloud.google.com/gke-nodepool: gpu-pool
+    nvidia.com/gpu: "present"
+  
+  # Allow scheduling on GPU nodes
+  tolerations:
+    - key: "nvidia.com/gpu"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+# Storage configuration
+storage_mounts:
+  models:
+    source: s3://oumi-models/
+    mount_path: /app/models
+  data:
+    source: s3://oumi-datasets/
+    mount_path: /app/data
+  output:
+    source: s3://oumi-output/
+    mount_path: /app/output
+
+# Environment variables
+envs:
+  OUMI_LOG_LEVEL: INFO
+  OUMI_CACHE_DIR: /app/cache
+  CUDA_VISIBLE_DEVICES: 0
+
+# Working directory
+working_dir: /app
+
+# Setup
+setup: |
+  pip install -U pip
+  pip install oumi[gpu]
+  # Verify GPU is available
+  python -c "import torch; print('GPU available:', torch.cuda.is_available())"
+
+# Main task - training a large model
+run: |
+  python -m oumi.cli.train \
+    --config configs/recipes/llama3_1/sft/70b/lora_train.yaml \
+    --output_dir /app/output \
+    --use_gpu

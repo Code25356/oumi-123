@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oumi-config
+data:
+  # Python settings
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  
+  # Application settings
+  OUMI_LOG_LEVEL: "INFO"
+  OUMI_DEVICE: "auto"  # Will be overridden in deployment for GPU/CPU variants
+  
+  # Model settings
+  OUMI_MODEL_CACHE_DIR: "/data/models"
+  OUMI_DATASET_CACHE_DIR: "/data/datasets"
+  
+  # Service settings
+  OUMI_HOST: "0.0.0.0"
+  OUMI_PORT: "8000"
+  
+  # Resource settings
+  OUMI_NUM_WORKERS: "2"
