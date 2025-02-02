@@ -4,7 +4,7 @@ import pytest
 
 from oumi.core.configs import JobConfig, JobResources, StorageMount
 from oumi.core.launcher import JobStatus
-from oumi.launcher.clients.sky_client import SkyClient
+from oumi.launcher.clients.sky_client import SkyClient, _convert_job_to_task
 
 
 #
@@ -73,6 +73,33 @@ def test_sky_client_aws_name():
 def test_sky_client_azure_name():
     client = SkyClient()
     assert client.SupportedClouds.AZURE.value == "azure"
+
+
+def test_sky_client_kubernetes_name():
+    client = SkyClient()
+    assert client.SupportedClouds.KUBERNETES.value == "kubernetes"
+
+
+def test_sky_client_launch_kubernetes(mock_sky_data_storage):
+    with patch("sky.clouds.Kubernetes") as mock_k8s, \
+         patch("sky.clouds.service_catalog.list_accelerators") as mock_list_acc:
+        # Mock the accelerator listing
+        mock_list_acc.return_value = {"A100-80": {"name": "A100-80", "count": 1}}
+        
+        mock_k8s_instance = Mock()
+        # Mock validate_region_zone to return a tuple
+        mock_k8s_instance.validate_region_zone.return_value = ("us-central1", None)
+        mock_k8s.return_value = mock_k8s_instance
+        
+        job = _get_default_job("kubernetes")
+        # Add kubernetes_config to resources
+        job.resources.kubernetes_config = "/path/to/kubeconfig"
+        
+        # This should trigger Kubernetes cloud creation
+        task = _convert_job_to_task(job)
+        
+        # Verify Kubernetes cloud was created with config
+        mock_k8s.assert_called_once_with(kubeconfig="/path/to/kubeconfig")
 
 
 def test_sky_client_launch(mock_sky_data_storage):

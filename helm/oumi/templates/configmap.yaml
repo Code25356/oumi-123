@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oumi.fullname" . }}-config
+  labels:
+    {{- include "oumi.labels" . | nindent 4 }}
+data:
+  # Python settings
+  PYTHONUNBUFFERED: {{ .Values.config.pythonUnbuffered | quote }}
+  PYTHONDONTWRITEBYTECODE: {{ .Values.config.pythonDontWriteBytecode | quote }}
+  
+  # Application settings
+  OUMI_LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+  OUMI_DEVICE: {{ .Values.config.device | quote }}
+  
+  # Model settings
+  OUMI_MODEL_CACHE_DIR: {{ .Values.config.modelCacheDir | quote }}
+  OUMI_DATASET_CACHE_DIR: {{ .Values.config.datasetCacheDir | quote }}
+  
+  # Service settings
+  OUMI_HOST: {{ .Values.config.host | quote }}
+  OUMI_PORT: {{ .Values.config.port | quote }}
+  
+  # Resource settings
+  OUMI_NUM_WORKERS: {{ .Values.config.numWorkers | quote }}

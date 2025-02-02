@@ -1,0 +1,150 @@
+# Default values for oumi.
+
+# Image configuration
+image:
+  repository: oumi
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Number of replicas to deploy
+replicaCount: 1
+
+# Deployment strategy
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+# Pod Security Context
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Resource configuration
+resources:
+  # Small deployment (CPU)
+  small:
+    requests:
+      cpu: "1"
+      memory: "4Gi"
+    limits:
+      cpu: "2"
+      memory: "8Gi"
+  # Medium deployment (CPU) - default
+  medium:
+    requests:
+      cpu: "2"
+      memory: "8Gi"
+    limits:
+      cpu: "4"
+      memory: "16Gi"
+  # Large deployment (CPU)
+  large:
+    requests:
+      cpu: "4"
+      memory: "16Gi"
+    limits:
+      cpu: "8"
+      memory: "32Gi"
+  # GPU deployment
+  gpu:
+    requests:
+      cpu: "2"
+      memory: "8Gi"
+      nvidia.com/gpu: "1"
+    limits:
+      cpu: "4"
+      memory: "16Gi"
+      nvidia.com/gpu: "1"
+
+# Select deployment size (small, medium, large, gpu)
+deploymentSize: medium
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8000
+  annotations: {}
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+# Persistence configuration
+persistence:
+  enabled: true
+  storageClass: ""
+  size: 100Gi
+  accessMode: ReadWriteOnce
+  annotations: {}
+
+# Application configuration
+config:
+  # Python settings
+  pythonUnbuffered: "1"
+  pythonDontWriteBytecode: "1"
+  
+  # Application settings
+  logLevel: "INFO"
+  device: "auto"  # auto, cpu, cuda
+  
+  # Model settings
+  modelCacheDir: "/data/models"
+  datasetCacheDir: "/data/datasets"
+  
+  # Service settings
+  host: "0.0.0.0"
+  port: "8000"
+  numWorkers: "2"
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Service account
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+# Health check configuration
+probes:
+  liveness:
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    path: /health
+  readiness:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    path: /health
+  startup:
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 12
+    path: /health

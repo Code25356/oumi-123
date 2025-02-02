@@ -35,7 +35,11 @@ def _get_sky_cloud_from_job(job: JobConfig) -> sky.clouds.Cloud:
         return sky.clouds.AWS()
     elif job.resources.cloud == SkyClient.SupportedClouds.AZURE.value:
         return sky.clouds.Azure()
-    raise ValueError(f"Unsupported cloud: {job.resources.cloud}")
+    elif job.resources.cloud == SkyClient.SupportedClouds.KUBERNETES.value:
+        # For Kubernetes, we need to handle the cluster configuration
+        # This will use the default kubeconfig or the one specified in job.resources.kubernetes_config
+        kubernetes_config = getattr(job.resources, "kubernetes_config", None)
+        return sky.clouds.Kubernetes(kubeconfig=kubernetes_config)
 
 
 def _get_sky_storage_mounts_from_job(job: JobConfig) -> dict[str, sky.data.Storage]:
@@ -89,6 +93,7 @@ class SkyClient:
         GCP = "gcp"
         RUNPOD = "runpod"
         LAMBDA = "lambda"
+        KUBERNETES = "kubernetes"  # Added Kubernetes support
 
     def launch(
         self, job: JobConfig, cluster_name: Optional[str] = None, **kwargs

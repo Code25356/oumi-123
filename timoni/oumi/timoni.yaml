@@ -1,0 +1,10 @@
+apiVersion: timoni.sh/v1alpha1
+kind: Module
+metadata:
+  name: oumi
+  description: Oumi ML model serving platform
+  tags: ["ml", "model-serving", "gpu"]
+  version: 0.1.0
+  license: Apache-2.0
+  sources:
+    - https://github.com/Code25356/oumi-123
